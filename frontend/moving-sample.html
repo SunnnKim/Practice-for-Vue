@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moving tag</title>
+</head>
+<body>
+    
+    <div class="util-bar">
+    </div>
+    <div id="memo-board">
+        <div class="dragdiv">
+            <div class="top-bar"></div>
+            <div class="text">
+                <textarea></textarea>
+            </div>
+        </div>
+        <div class="dragdiv" style="top: 300px;">
+            <div class="top-bar"></div>
+            <div></div>
+        </div>
+    </div>
+    <!-- <div class="box" draggable="true" ondragexit="drop(event)">
+        <span class="x">x</span>
+        <span class="y">y</span>
+    </div> -->
+
+   
+
+<script>
+function dragElement(elmnt) {
+     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0; 
+     elmnt.onmousedown = dragMouseDown;
+
+     function dragMouseDown(e) {
+        e = e || window.event; 
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY; 
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag; 
+    } 
+    function elementDrag(e) { 
+        e = e || window.event;
+        e.preventDefault(); 
+        if( e.clientY + elmnt.parentNode.offsetHeight <= document.querySelector('#memo-board').offsetTop + document.querySelector('#memo-board').offsetHeight
+            &&
+            e.clientX + elmnt.parentNode.offsetWidth <= document.querySelector('#memo-board').offsetLeft + document.querySelector('#memo-board').offsetWidth
+            &&
+            elmnt.parentNode.offsetLeft - pos3 + e.clientX - document.querySelector('#memo-board').offsetLeft > 0
+            &&
+            elmnt.parentNode.offsetTop - pos4 + e.clientY - document.querySelector('#memo-board').offsetTop > 0
+         ){
+            pos1 = pos3 - e.clientX; 
+            pos2 = pos4 - e.clientY; 
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            elmnt.parentNode.style.top = (elmnt.parentNode.offsetTop - pos2) + "px"; 
+            elmnt.parentNode.style.left = (elmnt.parentNode.offsetLeft - pos1) + "px"; 
+
+        }
+    }
+    function closeDragElement() { 
+        document.onmouseup = null; 
+        document.onmousemove = null; 
+    }
+}
+
+// 기능 실행 
+dragElement(document.querySelector('.top-bar'));
+    
+</script>
+
+
+</body>
+<style>
+.util-bar{ 
+
+}
+#memo-board{border: 1px solid; height: 600px;}
+.dragdiv {
+background:  #ffcc02; width: 200px; height: 200px; position: absolute; top: 50px; left: 150px; box-shadow: 0px 0px 3px 0px rgb(252, 242, 195);
+}
+.top-bar{
+   height: 10px; cursor: move; background-color: #cba200;
+}
+.dragdiv .text textarea{ 
+    resize: none; outline: none; background-color: transparent; border: none; width: 180px; margin: 3px;height: 180px;
+}
+
+
+</style>
+</html>
