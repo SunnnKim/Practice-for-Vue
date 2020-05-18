@@ -1,4 +1,4 @@
-package com.study.springboot.return bean;
+package com.study.springboot.bean;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,5 +37,7 @@ public class Config {
 	// Bean 객체 : Spring이 IoC방식으로 관리하는 객
 	// BeanFactory : Spring의 IoC를 담당하는 핵심 컨테이너 
 	// Application Context : 빈팩토리를 확장한 IoC 컨테이너
+	
+	//Singleton Bean 으로 등록됨 
 	
 }
