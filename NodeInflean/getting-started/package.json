@@ -1,14 +1,14 @@
 {
   "name": "getting-started",
   "version": "1.0.0",
-  "description": "",
+  "description": "webpack study",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack"
   },
   "keywords": [],
-  "author": "",
+  "author": "sunju.kim",
   "license": "ISC",
   "devDependencies": {
     "webpack": "^4.43.0",
