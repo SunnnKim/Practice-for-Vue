@@ -2,7 +2,7 @@ package com.study.springboot;
 
 import lombok.Data;
 
-@Data		// Lombok을 사용하여 객체의 getter / setter 자동생성  
+@Data		// Lombok을 사용하여 객체의 getter / setter 자동생성 ㄱ 
 public class Member {
 
 	// command 객체 : 파라미터와 관련됨 
