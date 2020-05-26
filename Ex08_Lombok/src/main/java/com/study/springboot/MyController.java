@@ -23,6 +23,7 @@ public class MyController {
 		String id = request.getParameter("id");
 		String name = request.getParameter("name");
 		
+		
 		model.addAttribute("id", id);
 		model.addAttribute("name", name);
 		
