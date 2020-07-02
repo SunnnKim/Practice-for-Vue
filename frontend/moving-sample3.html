@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>moving sample</title>
+</head>
+<body>
+    <div class="tab">
+        <span class="btn" onclick="addMemo(event)">메모추가</span>
+    </div>
+    <div id="board">
+        <!-- <div class="note">
+            <div class="top-bar"></div>
+            <div class="text">
+                <textarea></textarea>
+            </div>
+        </div> -->
+    </div>
+<script>
+// add memo
+function addMemo(event){
+    var board = document.querySelector('#board')
+    var str = `<div class="note">
+                    <div class="top-bar" style="top:1%; left:1%" onclick="dragElement(this)"></div>
+                    <div class="text">
+                        <textarea></textarea>
+                    </div>
+                </div>`
+    board.innerHTML += str
+    // 기능 실행 
+    dragElement(document.querySelector('.top-bar'));
+}
+
+// move memo
+function dragElement(elmnt) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    elmnt.onmousedown = dragMouseDown;
+
+    function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+    function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        if (e.clientY + elmnt.parentNode.offsetHeight <= document.querySelector('#board').offsetTop + document.querySelector('#board').offsetHeight
+            &&
+            e.clientX + elmnt.parentNode.offsetWidth <= document.querySelector('#board').offsetLeft + document.querySelector('#board').offsetWidth
+            &&
+            elmnt.parentNode.offsetLeft - pos3 + e.clientX - document.querySelector('#board').offsetLeft > 0
+            &&
+            elmnt.parentNode.offsetTop - pos4 + e.clientY - document.querySelector('#board').offsetTop > 0
+        ) {
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            elmnt.parentNode.style.top = (elmnt.parentNode.offsetTop - pos2) + "px";
+            elmnt.parentNode.style.left = (elmnt.parentNode.offsetLeft - pos1) + "px";
+
+        }
+    }
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+}
+
+
+
+
+</script>    
+
+<style>
+.tab{ height: 60px; background-color: white;}
+.tab .btn { border: 1px solid; margin: 10px; display: inline-block; padding: 10px; cursor: pointer;}
+.tab .btn:hover{ color: tomato;}
+
+#board{ height: 500px; background-color: #eaeaea;}
+.note {
+background:  #ffcc02; width: 200px; height: 200px; position: absolute; 
+top: 50px; left: 150px; box-shadow: 0px 0px 3px 0px rgb(252, 242, 195);
+}
+.top-bar{ height: 10px; cursor: move; background-color: #cba200; }
+.note .text textarea{ 
+    resize: none; outline: none; background-color: transparent; border: none; 
+    width: 190px; margin: 3px;height: 180px;
+}
+</style>
+</body>
+</html>

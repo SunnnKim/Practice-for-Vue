@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <title>My Calendar</title>
+</head>
+<body>
+<div id="app">
+    <div class="left">
+        <div class="logo-box">
+            <h1>My Calendar</h1>
+        </div>
+        <div class="tool-content">
+            <button class="buttons">Add</button>
+            <button class="buttons">Delete</button>
+        </div>
+        <div class="left-content">
+            날짜를 선택하세요
+        </div>  
+    </div>  
+    <div class="calendar">
+        <div class="date-box">
+            <h1>
+                {{year}}.{{month}}
+            </h1>
+        </div>
+        <div class="content-box">
+            <div class="days">
+                <div>SUN</div>
+                <div>MON</div>
+                <div>TUES</div>
+                <div>WED</div>
+                <div>THUR</div>
+                <div>FRI</div>
+                <div>SAT</div>
+            </div>
+            <div class="dates">
+                <div v-for="i in frontBlank" class="blank">
+                    <div class="dates-box" >
+                    </div>
+                </div>
+                <div v-for="i in lastDay">
+                    <div class="dates-box"  v-if="i==date">
+                        <div id="today">{{i}}</div>
+                    </div>
+                    <div class="dates-box" v-else>
+                        <div>{{i}}</div>
+                    </div>
+                </div>
+                <div v-for="i in lastBlank" class="blank">
+                    <div class="dates-box blank">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+var today = new Date();
+var year = today.getFullYear();
+var month = today.getMonth() + 1;
+var date = today.getDate();
+var lastDay = new Date(year, month,0).getDate();
+var frontBlank = today.getDay() - 1;
+var lastBlank = 6 - (new Date(year, month-1, lastDay).getDay());
+var app = new Vue({
+    el:'#app',
+    data:{
+        year: year,
+        month: month,
+        date: date,
+        lastDay : lastDay,
+        frontBlank : frontBlank,
+        lastBlank : lastBlank
+    }
+});
+
+function calculateFrontBlank(month){
+
+}
+</script>   
+<style>
+/*left content*/
+.left{
+    width: 20%;
+    height: 900px;
+    /* border: 1px solid red;  */
+    float: left; padding-top: 30px; padding-right: 10px; border-right: 1px solid #eaeaea;
+}
+.left .logo-box{ 
+    font-weight: 200; text-align: center; margin-bottom: 50px;}
+.left .tool-content{ 
+     margin: 10px; height: 30px;
+}
+.left .tool-content .buttons{
+    border: 1px solid #eaeaea; background-color: white; width: 44%;
+    margin: 4px; height: 20px; float: left;
+} 
+
+.left .left-content{
+    border: 1px solid #eaeaea; height: 700px; margin: 10px;
+}
+/* Calendar Content */
+.calendar{
+    height: 800px; width: 75%; margin-right: 50px;
+    /* border: 1px solid gray; */
+    float: right;
+}
+.calendar .date-box{
+    height: 80px; 
+    /* border: 1px  solid green; */
+}
+.calendar .date-box h1{
+    color: gray; font-weight: 200; text-align: center;
+    margin: 20px auto;
+}
+
+.calendar .content-box{ 
+    background-color: #fff; height: 800px; 
+}
+.calendar .content-box .days{
+    /* border: 1px solid;  */
+    border-bottom: 1px solid #eaeaea;
+    height: 30px; display:flex; justify-content: space-evenly;
+}
+.calendar .content-box .days > div{
+    display:flex; justify-content: space-evenly;
+    font-weight: 300; font-size: 15px;
+     width: 200px; color: #000; background-color: #fff; text-align: center; line-height: 30px;
+}
+.calendar .content-box .dates .blank{
+    background-color: #fdfdfd; 
+}
+.calendar .content-box .dates .blank:hover{
+    background-color: #fdfdfd; cursor: auto;
+}
+.calendar .content-box .dates{ font-size: 30px; color: #000; margin-left: 5px;}
+.calendar .content-box .dates > div:nth-child(7n+1) {
+    /* float: none; */ 
+}
+.calendar .content-box .dates > div:nth-child(7n +1) {
+    border-left: 1px solid #eaeaea;
+}
+.calendar .content-box .dates > div{
+    float: left; 
+    width: 150px; height: 150px;  
+    border-right: 1px solid #eaeaea; border-bottom: 1px solid #eaeaea;
+}
+.calendar .content-box .dates > div:hover{
+    background-color: #eee;cursor: pointer;
+}
+.calendar .content-box .dates > div > .dates-box{
+    font-size: 13px; margin: 5px; font-weight: 300;
+}
+#today{
+    border: 3px solid red;
+    width: 150px; height: 150px; 
+}
+</style>
+</body>
+</html>
