@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://kit.fontawesome.com/e11681bffc.js" crossorigin="anonymous"></script>
     <title>My Calendar</title>
 </head>
 <body>
@@ -23,7 +24,9 @@
     <div class="calendar">
         <div class="date-box">
             <h1>
+            <i class="fas fa-chevron-left"></i>
                 {{year}}.{{month}}
+            <i class="fas fa-chevron-right" onclick="addMonth()"></i>
             </h1>
         </div>
         <div class="content-box">
@@ -36,14 +39,14 @@
                 <div>FRI</div>
                 <div>SAT</div>
             </div>
-            <div class="dates">
+            <div class="dates" id="changeMonth">
                 <div v-for="i in frontBlank" class="blank">
                     <div class="dates-box" >
                     </div>
                 </div>
-                <div v-for="i in lastDay">
+                <div v-for="i in lastDay" class="date" onclick="func(this)">
                     <div class="dates-box"  v-if="i==date">
-                        <div id="today">{{i}}</div>
+                        <div id="today">{{i}}&nbsp;&nbsp;&nbsp;TODAY</div>
                     </div>
                     <div class="dates-box" v-else>
                         <div>{{i}}</div>
@@ -63,7 +66,7 @@ var year = today.getFullYear();
 var month = today.getMonth() + 1;
 var date = today.getDate();
 var lastDay = new Date(year, month,0).getDate();
-var frontBlank = today.getDay() - 1;
+var frontBlank = (new Date(year, month-1,1).getDay());
 var lastBlank = 6 - (new Date(year, month-1, lastDay).getDay());
 var app = new Vue({
     el:'#app',
@@ -77,10 +80,61 @@ var app = new Vue({
     }
 });
 
-function calculateFrontBlank(month){
+// selected : 처음에는 오늘날짜로 선택하기 
+var className = document.querySelectorAll('.date .dates-box');
+var selected = document.querySelector('#today').parentElement.parentElement;
+selected.classList.add('selected')
+function func(ele) { 
+    var children = ele.parentElement.children;
+    console.log(children)
+    for( c of children){
+        if(c.classList.contains('selected')){
+            c.classList.remove('selected');
+        }
+    }
+    ele.classList.add('selected');
+    // 일정 보여주기 
+}
 
+function addMonth(){
+    month++;
+    alert(month)
+    // app = new Vue({
+    //     el: '#app',
+    //     data: {
+    //         year: year,
+    //         month: month,
+    //         date: date,
+    //         lastDay: lastDay,
+    //         frontBlank: frontBlank,
+    //         lastBlank: lastBlank
+    //     }
+    // });
+    if(month != today.getMonth() + 1) date = -1;
+    var cal = document.querySelector('#changeMonth');
+    console.log(cal)
+    cal.innerHTML = `<div v-for="i in frontBlank" class="blank">
+                    <div class="dates-box" >
+                    </div>
+                </div>
+                <div v-for="i in lastDay" class="date" onclick="func(this)">
+                    <div class="dates-box"  v-if="i==date">
+                        <div id="today">{{i}}&nbsp;&nbsp;&nbsp;TODAY</div>
+                    </div>
+                    <div class="dates-box" v-else>
+                        <div>{{i}}</div>
+                    </div>
+                </div>
+                <div v-for="i in lastBlank" class="blank">
+                    <div class="dates-box blank">
+                    </div>
+                </div>`;
 }
 </script>   
+
+
+
+
 <style>
 /*left content*/
 .left{
@@ -155,8 +209,18 @@ function calculateFrontBlank(month){
     font-size: 13px; margin: 5px; font-weight: 300;
 }
 #today{
-    border: 3px solid red;
-    width: 150px; height: 150px; 
+    background-color:tomato; color:white;
+    
+}
+.selected{
+    background-color: #eaeaea
+}
+/* font-awesome */
+.fa-chevron-left, .fa-chevron-right{
+   color: #eee; cursor: pointer; 
+}
+.fa-chevron-left:hover, .fa-chevron-right:hover{
+    color: tomato;
 }
 </style>
 </body>
