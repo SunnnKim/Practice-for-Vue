@@ -24,7 +24,7 @@
     <div class="calendar">
         <div class="date-box">
             <h1>
-            <i class="fas fa-chevron-left"></i>
+            <i class="fas fa-chevron-left" onclick="subtrackMonth()"></i>
                 {{year}}.{{month}}
             <i class="fas fa-chevron-right" onclick="addMonth()"></i>
             </h1>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
                 <div v-for="i in lastDay" class="date" onclick="func(this)">
-                    <div class="dates-box"  v-if="i==date">
+                    <div class="dates-box"  v-if="i==date && month == nowMonth && date == nowDate">
                         <div id="today">{{i}}&nbsp;&nbsp;&nbsp;TODAY</div>
                     </div>
                     <div class="dates-box" v-else>
@@ -61,16 +61,32 @@
     </div>
 </div>
 <script>
+
+
 var today = new Date();
 var year = today.getFullYear();
 var month = today.getMonth() + 1;
 var date = today.getDate();
-var lastDay = new Date(year, month,0).getDate();
-var frontBlank = (new Date(year, month-1,1).getDay());
-var lastBlank = 6 - (new Date(year, month-1, lastDay).getDay());
+var lastDay = getLastDay(year, month);
+var frontBlank = getFrontBlank(year, month);
+var lastBlank = getBackBlank(year, month, lastDay);
+function getFrontBlank(y, m){
+    return (new Date(y, m - 1, 1).getDay());
+}
+function getBackBlank(y, m, last){ 
+    return 6 - (new Date(y, m - 1, last).getDay());
+}
+function getLastDay(y, m){
+    return new Date(y, m, 0).getDate();
+}
+
+
 var app = new Vue({
     el:'#app',
     data:{
+        nowYear : year,
+        nowMonth : month,
+        nowDate : date,
         year: year,
         month: month,
         date: date,
@@ -84,6 +100,7 @@ var app = new Vue({
 var className = document.querySelectorAll('.date .dates-box');
 var selected = document.querySelector('#today').parentElement.parentElement;
 selected.classList.add('selected')
+// 클릭하면 선택하는 함수
 function func(ele) { 
     var children = ele.parentElement.children;
     console.log(children)
@@ -98,37 +115,30 @@ function func(ele) {
 
 function addMonth(){
     month++;
-    alert(month)
-    // app = new Vue({
-    //     el: '#app',
-    //     data: {
-    //         year: year,
-    //         month: month,
-    //         date: date,
-    //         lastDay: lastDay,
-    //         frontBlank: frontBlank,
-    //         lastBlank: lastBlank
-    //     }
-    // });
-    if(month != today.getMonth() + 1) date = -1;
-    var cal = document.querySelector('#changeMonth');
-    console.log(cal)
-    cal.innerHTML = `<div v-for="i in frontBlank" class="blank">
-                    <div class="dates-box" >
-                    </div>
-                </div>
-                <div v-for="i in lastDay" class="date" onclick="func(this)">
-                    <div class="dates-box"  v-if="i==date">
-                        <div id="today">{{i}}&nbsp;&nbsp;&nbsp;TODAY</div>
-                    </div>
-                    <div class="dates-box" v-else>
-                        <div>{{i}}</div>
-                    </div>
-                </div>
-                <div v-for="i in lastBlank" class="blank">
-                    <div class="dates-box blank">
-                    </div>
-                </div>`;
+    if(month == 13) {
+        year++;
+        month = 1;
+    }
+    app.month = month;
+    app.year = year;
+    app.lastDay =  getLastDay(year, month);
+    app.frontBlank =  getFrontBlank(year, month);
+    app.lastBlank = getBackBlank(year, month, lastDay);
+
+}
+
+function subtrackMonth() {
+    month--;
+    if (month == 0) {
+        year--;
+        month = 12;
+    }
+    app.month = month;
+    app.year = year;
+    app.lastDay = getLastDay(year, month);
+    app.frontBlank = getFrontBlank(year, month);
+    app.lastBlank = getBackBlank(year, month, lastDay);
+
 }
 </script>   
 
