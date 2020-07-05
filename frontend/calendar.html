@@ -14,17 +14,17 @@
             <h1>My Calendar</h1>
         </div>
         <div class="tool-content">
-            <i class="fas fa-plus"></i>
-            <i class="far fa-trash-alt"></i>
+            <i class="fas fa-plus" onclick="openModal()"></i>
+            <i class="far fa-trash-alt" onclick="removeSchedule()"></i>
         </div>
         <div class="left-content">
             <div class="date-info">
-                {{year}}.{{month}}.{{date}}
+                {{year}}.{{month}}.{{selectedDate}}
             </div>
-            <div class="schedule">
-                <div v-for="i in 5">
-                    <span>djfksdjfklsdjflksddsfjksldflksfklsdjlfksjlfjdklsjflks{{i}}</span>
-                    <span>2020.7.5 ~ 2020.07.22 17:00</span>
+            <div class="schedule" id="schedules">
+                <div v-for="i in 2" onclick="selectSchedule(this)">
+                    <span>일정{{i}}</span>
+                    <span>기본일정</span>
                 </div>
             </div>
         </div>  
@@ -52,12 +52,12 @@
                     <div class="dates-box" >
                     </div>
                 </div>
-                <div v-for="i in lastDay" class="date" onclick="func(this)">
+                <div v-for="i in lastDay" class="date" onclick="selectDate(this)">
                     <div class="dates-box"  v-if="i==date && month == nowMonth && date == nowDate">
-                        <div id="today">{{i}}&nbsp;&nbsp;&nbsp;TODAY</div>
+                        <div id="today"><span>{{i}}</span>&nbsp;&nbsp;&nbsp;TODAY</div>
                     </div>
                     <div class="dates-box" v-else>
-                        <div>{{i}}</div>
+                        <div><span>{{i}}</span></div>
                     </div>
                 </div>
                 <div v-for="i in lastBlank" class="blank">
@@ -67,7 +67,32 @@
             </div>
         </div>
     </div>
-</div>
+
+
+    <!-- Modal -->
+    <div class="mobal-back">
+        <div id="modal">
+            <span onclick="closeModal()"><i class="fas fa-times"></i></span>
+            <h1>add schedule</h1>
+            <div class="modal-content">
+                <div>
+                    <span>title</span>
+                    <input type="text" id="title">
+                </div>
+                <div>
+                    <span>date</span>
+                    <div>{{year}}.{{month}}.{{selectedDate}}</div>
+                </div>
+                <div>
+                    <span>detail</span>
+                    <input type="text" id="detail">
+                </div>
+            </div>
+            <button type="button" onclick="addSchedule()">add</button>
+        </div>
+    </div>
+</div><!-- app -->
+
 <script>
 
 
@@ -110,16 +135,17 @@ var className = document.querySelectorAll('.date .dates-box');
 var selected = document.querySelector('#today').parentElement.parentElement;
 selected.classList.add('selected')
 // 클릭하면 선택하는 함수
-function func(ele) { 
+function selectDate(ele) { 
     var children = ele.parentElement.children;
-    console.log(children)
     for( c of children){
         if(c.classList.contains('selected')){
             c.classList.remove('selected');
         }
     }
     ele.classList.add('selected');
-    // 일정 보여주기 
+    // 일정 보여주기
+    // 일정 날짜 바꾸기  
+    app.selectedDate = ele.children[0].children[0].children[0].innerHTML;
 }
 
 function addMonth(){
@@ -149,6 +175,67 @@ function subtrackMonth() {
     app.lastBlank = getBackBlank(year, month, lastDay);
 
 }
+
+
+/* 스케쥴러 부분 */
+var selectedSchedule = [];
+// 스케쥴러 선택하기 
+function selectSchedule( s ){
+    if(s.classList.contains("selectedSchedule")){
+        s.classList.remove("selectedSchedule")
+        selectedSchedule.pop(s);
+    }else{
+        s.classList.add("selectedSchedule")
+        selectedSchedule.push(s);
+    }
+}
+// 추가하기 : 모달열기 
+function openModal(){
+    // modal open
+    document.querySelector(".mobal-back").classList.add("fadeinModal")
+    document.querySelector(".mobal-back").style.display = "block";
+    document.querySelector("#modal").style.display = "block";
+    // 초기화
+    var inputs = document.querySelectorAll("#modal input");
+    for(input of inputs){
+        input.value = "";
+    }
+
+}
+// 추가하기 : 모달 닫기
+function closeModal(){
+         document.querySelector(".mobal-back").style.display = "none";
+        document.querySelector("#modal").style.display = "none";
+}
+// 추가하기 : 엘리먼트 추가하기
+function addSchedule(){
+    let scheduleBox = document.querySelector('#schedules');
+    let title = document.querySelector('#title').value;
+    let detail = document.querySelector('#detail').value;
+
+    scheduleBox.innerHTML += 
+                `<div onclick="selectSchedule(this)">
+                    <span>`+title+`</span>
+                    <span>`+detail+`</span>
+                </div>`;
+    closeModal();
+}
+// 삭제하기
+function removeSchedule(){
+    if(selectedSchedule.length == 0) return;
+    var all = document.querySelector("#schedules")
+    var children = all.children;
+    for(var i = 0; i < children.length; i++){
+        for(var s of selectedSchedule){
+            if(children[i].contains(s)){
+                children[i].remove();
+            }
+        }
+    }
+    selectedSchedule = [];
+}
+
+
 </script>   
 
 
@@ -159,7 +246,6 @@ function subtrackMonth() {
 .left{
     width: 20%;
     height: 1000px;
-    /* border: 1px solid red;  */
     float: left; padding-top: 30px; padding-right: 10px; border-right: 1px solid #eaeaea;
 }
 .left .logo-box{ 
@@ -264,6 +350,9 @@ function subtrackMonth() {
 .selected{
     background-color: #eaeaea
 }
+.left .left-content .schedule .selectedSchedule{
+    background-color: indianred; color:white;
+}
 /* font-awesome */
 .fa-chevron-left, .fa-chevron-right{
    color: #eee; cursor: pointer; 
@@ -271,6 +360,98 @@ function subtrackMonth() {
 .fa-chevron-left:hover, .fa-chevron-right:hover{
     color: tomato;
 }
+
+/* Modal */
+.mobal-back{
+    display: none;
+    position: fixed; top: 0; left: 0; z-index: 100; overflow: auto;
+    height: 100%; width: 100%; background-color: rgba(255, 255, 255, 0.5);
+}
+#modal{
+    display: none;
+    border: 1px solid #eaeaea; box-shadow: 0 0 10px 1px #eaeaea;
+    width: 600px; height: 430px; background-color: #fff; margin: 150px auto;
+    position: relative;
+}
+#modal .fa-times{ 
+    color: #eee; font-size: 45px; position: absolute; right: 20px; top:14px
+}
+#modal .fa-times:hover{ color: #333;
+}
+#modal h1{ font-size: 40px; font-weight: 200; margin: 15px; margin-left: 10px; padding-left: 10px; height: 50px; line-height: 50px; border-bottom: 1px solid #eaeaea;}
+
+#modal .modal-content{
+     height: 250px;
+}
+#modal .modal-content > div { 
+    margin: 10px 30px; font-weight: 300;
+     height: 50px; padding: 10px;}
+#modal .modal-content > div > span{ 
+    display: block; font-weight: 200; margin: 10px 0;
+}
+#modal .modal-content > div > input{ 
+    padding-left: 10px; font-weight: 300; 
+    height: 30px; width: 500px; outline: none; border: none; background: #efefef;
+}
+#modal .modal-content > div > div{
+    font-weight: 300; font-size: 20px; margin-top: 5px;
+} 
+
+#modal button{
+    transition: all ease-in-out 0.3s;
+    display: block; margin: 10px auto; margin-top: 20px; width: 200px; outline: none; height: 30px;
+    border: 1px solid #eaeaea; background-color: #fff; font-size: 20px; color: #eaeaea;
+} 
+#modal button:hover{
+    color: tomato;  border: 1px solid tomato;
+}
+
+
+
+
+
+
+
+
+.fadeinModal {
+    animation: fadein 1s;
+    -moz-animation: fadein 1s; /* Firefox */
+    -webkit-animation: fadein 1s; /* Safari and Chrome */
+    -o-animation: fadein 1s; /* Opera */
+}
+@keyframes fadein {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-moz-keyframes fadein { /* Firefox */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-webkit-keyframes fadein { /* Safari and Chrome */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-o-keyframes fadein { /* Opera */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 </style>
 </body>
 </html>
