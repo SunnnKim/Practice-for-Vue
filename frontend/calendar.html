@@ -22,10 +22,10 @@
                 {{year}}.{{month}}.{{selectedDate}}
             </div>
             <div class="schedule" id="schedules">
-                <div v-for="i in 2" onclick="selectSchedule(this)">
+                <!-- <div v-for="i in 2" onclick="selectSchedule(this)">
                     <span>일정{{i}}</span>
                     <span>기본일정</span>
-                </div>
+                </div> -->
             </div>
         </div>  
     </div>  
@@ -81,7 +81,7 @@
                 </div>
                 <div>
                     <span>date</span>
-                    <div>{{year}}.{{month}}.{{selectedDate}}</div>
+                    <div id="s-date">{{year}}.{{month}}.{{selectedDate}}</div>
                 </div>
                 <div>
                     <span>detail</span>
@@ -103,6 +103,16 @@ var date = today.getDate();
 var lastDay = getLastDay(year, month);
 var frontBlank = getFrontBlank(year, month);
 var lastBlank = getBackBlank(year, month, lastDay);
+var scheduleList = {
+    
+};      // 스케쥴 있는날
+
+var selectedSchedule = [];      // 선택한 스케쥴러
+var scheduleByDate = {
+    "2020.7.6" : [{ title:'우중이랑 저녁', detail:'밥'}]
+};        // 기존 스케쥴러 일정 
+
+
 function getFrontBlank(y, m){
     return (new Date(y, m - 1, 1).getDay());
 }
@@ -112,8 +122,7 @@ function getBackBlank(y, m, last){
 function getLastDay(y, m){
     return new Date(y, m, 0).getDate();
 }
-
-
+// Vue.js Instance
 var app = new Vue({
     el:'#app',
     data:{
@@ -126,9 +135,29 @@ var app = new Vue({
         date: date,
         lastDay : lastDay,
         frontBlank : frontBlank,
-        lastBlank : lastBlank
+        lastBlank : lastBlank,
+        scheduleList : scheduleList
+    },
+    mounted() {
+         
     }
 });
+    // 오늘의 일정 초기화 
+    let key = app.year + '.' + app.month + '.' + app.selectedDate
+    let value = scheduleByDate[key];
+    let scheduleBox = document.querySelector('#schedules');
+    scheduleBox.innerHTML = "";
+    if (value != undefined) {
+        for (var i = 0; i < value.length; i++) {
+            scheduleBox.innerHTML +=
+                `<div onclick="selectSchedule(this)">
+                <span>`+ value[i].title + `</span>
+                <span>`+ value[i].detail + `</span>
+            </div>`;
+        }
+    }
+   
+
 
 // selected : 처음에는 오늘날짜로 선택하기 
 var className = document.querySelectorAll('.date .dates-box');
@@ -146,6 +175,21 @@ function selectDate(ele) {
     // 일정 보여주기
     // 일정 날짜 바꾸기  
     app.selectedDate = ele.children[0].children[0].children[0].innerHTML;
+    let key = app.year + '.' + app.month + '.' + app.selectedDate
+    let value = scheduleByDate[key];
+    console.log(value)
+    let scheduleBox = document.querySelector('#schedules');
+    scheduleBox.innerHTML = "";
+    if(value != undefined){
+        for( var i = 0; i < value.length; i ++ ){
+            scheduleBox.innerHTML +=
+                `<div onclick="selectSchedule(this)">
+                    <span>`+ value[i].title + `</span>
+                    <span>`+ value[i].detail + `</span>
+                </div>`;
+        }
+    }
+
 }
 
 function addMonth(){
@@ -178,7 +222,8 @@ function subtrackMonth() {
 
 
 /* 스케쥴러 부분 */
-var selectedSchedule = [];
+
+
 // 스케쥴러 선택하기 
 function selectSchedule( s ){
     if(s.classList.contains("selectedSchedule")){
@@ -207,32 +252,72 @@ function closeModal(){
          document.querySelector(".mobal-back").style.display = "none";
         document.querySelector("#modal").style.display = "none";
 }
+var json = {
+    "key":[ {title:"",detail:""}, {} ]
+}
 // 추가하기 : 엘리먼트 추가하기
 function addSchedule(){
     let scheduleBox = document.querySelector('#schedules');
     let title = document.querySelector('#title').value;
     let detail = document.querySelector('#detail').value;
-
+    let key = document.querySelector('#s-date').innerHTML;
+    let value = scheduleByDate[key];
+    if( value != undefined) {
+        let temp = {
+            "title":title, 
+            "detail" : detail
+        }
+        value.push(temp)
+        scheduleByDate[key] = value;
+    }
+    else{
+        let temp = {
+            "title": title,
+            "detail": detail
+        }
+        value = [temp]
+        scheduleByDate[key] = value;
+    }
     scheduleBox.innerHTML += 
                 `<div onclick="selectSchedule(this)">
                     <span>`+title+`</span>
                     <span>`+detail+`</span>
                 </div>`;
+    
     closeModal();
 }
 // 삭제하기
 function removeSchedule(){
     if(selectedSchedule.length == 0) return;
     var all = document.querySelector("#schedules")
+    
+
     var children = all.children;
-    for(var i = 0; i < children.length; i++){
-        for(var s of selectedSchedule){
-            if(children[i].contains(s)){
+   
+    // scheduleByDate에서 삭제하기
+    let key = app.year + '.' + app.month + '.' + app.selectedDate
+    let value = scheduleByDate[key];
+   
+     for (var i = 0; i < children.length; i++) {
+        for (var s of selectedSchedule) {
+            if (children[i].contains(s)) {
                 children[i].remove();
             }
         }
     }
+    for(var i = 0; i < selectedSchedule.length; i ++){
+        let title = selectedSchedule[i].children[0].innerHTML;
+        for( i in value){
+            if(value[i].title == title){  
+                console.log(i)
+                value.splice(i,1)
+                break;
+            }
+        }
+    }
+    scheduleByDate[key] = value;
     selectedSchedule = [];
+    
 }
 
 
@@ -243,53 +328,20 @@ function removeSchedule(){
 
 <style>
 /*left content*/
-.left{
-    width: 20%;
-    height: 1000px;
-    float: left; padding-top: 30px; padding-right: 10px; border-right: 1px solid #eaeaea;
-}
-.left .logo-box{ 
-    font-weight: 200; text-align: center; margin-bottom: 50px;}
-.left .logo-box h1{ 
-    font-weight: 200;
-}
-.left .tool-content{ 
-     margin: 10px; height: 30px; text-align: right;
-}
-.left .tool-content i{
-    color: #bbb; display: inline-block; width: 20px; line-height: 30px; margin: 0 3px;
-}
-.left .tool-content i:hover{
-    color: #333;
-}
-.left .tool-content .buttons{
-    border: 1px solid #eaeaea; background-color: white; width: 44%;
-    margin: 4px; height: 20px; float: left;
-} 
+.left{ width: 20%; height: 1000px; float: left; padding-top: 30px; padding-right: 10px; border-right: 1px solid #eaeaea;}
+.left .logo-box{ font-weight: 200; text-align: center; margin-bottom: 50px;}
+.left .logo-box h1{ font-weight: 200;}
+.left .tool-content{ margin: 10px; height: 30px; text-align: right;}
+.left .tool-content i{ color: #bbb; display: inline-block; width: 20px; line-height: 30px; margin: 0 3px;}
+.left .tool-content i:hover{ color: #333;}
+.left .tool-content .buttons{ border: 1px solid #eaeaea; background-color: white; width: 44%; margin: 4px; height: 20px; float: left;} 
 
-.left .left-content{
-    border: 1px solid #eaeaea; height: 700px; margin: 10px;
-}
-.left .left-content .date-info{
-    border-bottom: 1px solid #eaeaea; 
-    text-align: center; font-size: 20px; font-weight: 200; height: 50px; line-height: 50px;
-}
-.left .left-content .schedule{
-    overflow-y: scroll; height: 100%; position: relative;
- background-color: #efefef;
-}
-.left .left-content .schedule > div{
-    border: 1px solid #fff;
-    margin: 3px 0; font-weight: 300; padding: 10px;
-    height: 50px; background-color: #fff;
-}
-.left .left-content .schedule > div:hover{
-    cursor: pointer; background-color: tomato; color: white;
-}
-.left .left-content .schedule > div > span{
-    display: block; margin: 2px 0;overflow: hidden; text-overflow: ellipsis;
-}
-
+.left .left-content{ border: 1px solid #eaeaea; height: 700px; margin: 10px; }
+.left .left-content .date-info{ border-bottom: 1px solid #eaeaea; text-align: center; font-size: 20px; font-weight: 200; height: 50px; line-height: 50px; }
+.left .left-content .schedule{ overflow-y: scroll; height: 100%; position: relative;background-color: #efefef;}
+.left .left-content .schedule > div{ border: 1px solid #fff; margin: 3px 0; font-weight: 300; padding: 10px; height: 50px; background-color: #fff; }
+.left .left-content .schedule > div:hover{ cursor: pointer; background-color: tomato; color: white; }
+.left .left-content .schedule > div > span{ display: block; margin: 2px 0;overflow: hidden; text-overflow: ellipsis; }
 
 /* Calendar Content */
 .calendar{
