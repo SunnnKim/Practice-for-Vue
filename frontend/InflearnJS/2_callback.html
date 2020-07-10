@@ -12,9 +12,9 @@
 
 // Callback Function
 // 1. setInterval()
-// setInterval(function(){
-//     console.log('this function repeats in 1 second')
-// }, 1000)
+setInterval(function(){
+    console.log('this function repeats in 1 second')
+}, 1000)
 
 // call back : call() 사용하기 
     function coffee( shop, price ){
@@ -59,18 +59,35 @@
 
 
 
-    // 3. callback - addEventListener일떄 콜백 함수에사
-    // 기본 this는 리스너이벤트의 대상 엘리먼트
-    // 첫번째 인자는 mouse Event임
+    // // 3. callback - addEventListener일떄 콜백 함수에사
+    // // 기본 this는 리스너이벤트의 대상 엘리먼트
+    // // 첫번째 인자는 mouse Event임
     document.body.innerHTML = '<div id = "a">abc</div>'
     function cbFunc(x){
         console.log(this, x)
     }
     document.getElementById('a').addEventListener('click', cbFunc)
     $('#a').on('click', cbFunc)
+    
 
 
-    // 4.
+    // 4. (주의!!!!) 콜백은 함수임, 메소드가 아님 
+    var arr = [1,2,3,4,5]
+    var obj = {
+        vals : [1, 2, 3],
+        logValues : function( v, i ){
+            if(this.vals){
+                console.log(this.vals, v, i)
+            }else{ 
+                console.log(this, v, i)
+            }
+        }
+    }
+    obj.logValues(1, 2)     // OBJ의 메소드로 호출하기 - > this => obj
+    arr.forEach( obj.logValues )    
+    // obj에서 참조하고 있는 obj.logValues만 콜백함수로 전달됨 
+    // this와 인자값들은 forEach의 규칙에 맞게 this는 해당 이벤트가 발생한 엘리먼트, 
+    // v, i와 같은 인자값은 참조하고 있는 arr의 인자값으로 대치됨 
 
 </script>
 </body>
