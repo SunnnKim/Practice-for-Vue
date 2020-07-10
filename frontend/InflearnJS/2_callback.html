@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    
+<script>
+
+// Callback Function
+// 1. setInterval()
+// setInterval(function(){
+//     console.log('this function repeats in 1 second')
+// }, 1000)
+
+// call back : call() 사용하기 
+    function coffee( shop, price ){
+        this.shop = shop;
+        this.price = price;
+        console.log(shop + ', ' + price)
+    }
+    function sample1(name, price){
+        coffee.call(this, name, price)
+        this.menu = 'americano'
+    }
+    function sample2(name, price) {
+        coffee.call(this)
+        this.menu = 'latte'
+    }
+
+    var menu1 = new sample1('starbucks', 4300);
+    var menu2 = new coffee('coffee bean', 4000)
+    var menu3 = new sample2('ediya', 4300);
+
+
+    Array.prototype.forEach = function(callback, thisArg){
+        var self = thisArg || this;
+        for(var i = 0; i < self.length; i++){
+            console.log(self)
+            console.log(this[i])
+            console.log(i)
+            console.log(this)
+            callback.call(self, this[i], i, this);
+        }
+    }
+    var arr = [ 1, 2, 3, 4, 5];
+    var entries = [];
+    arr.forEach( function( v, i ){
+        // v = arr[i] // arr 의 데이터 
+        // i = arr's index
+        // this = forEach문에 있는 Array
+        entries.push([i, v, this[i]]);
+    })
+    // , [10,20,30,40,50])
+    console.log(entries)
+
+
+
+    // 3. 
+    document.body.innerHTML = '<div id = "a">abc</div>'
+    function cbFunc(x){
+        console.log(this, x)
+    }
+    document.getElementById('a').addEventListener('click', cbFunc)
+    $('#a').on('click', cbFunc)
+
+
+    
+</script>
+</body>
+</html>
