@@ -9,6 +9,26 @@
 <script>
 
 // Method & Function : 메소드와 함수 
+// 함수처럼 생겼으나 앞에 .이 붙어있음
+var obj = {
+    a : 1,
+    b : function(){
+        console.log(this)
+    },
+    c:function(){
+        console.log(this.a)
+    }
+}
+obj.b();
+obj.c();
+
+console.dir(obj.b)
+console.dir(obj.c)
+
+// 함수와 메소드의 차이 : this 를 바인딩하느냐 안하느냐에 따라 다름 
+// this의 범위 : obj.b() 에서 .전까지가 this, 여기서는 obj 
+// 메소드일 경우 this가 바인딩이 되므로 함수와 메소드를 잘 구분해서 사용할 것 
+
 </script>
     
 </body>

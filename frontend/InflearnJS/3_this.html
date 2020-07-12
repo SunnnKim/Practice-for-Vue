@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<script>
+// *** ECMA Script란 ? 
+// ECMAScript International 에서 표준화한 스크립트언어라는 의미
+// 줄여서 ES
+
+// 3. this 
+// 1) 전역 공간에서 (global)
+// 웹 브라우져에서의 전역 this : window
+// node.js 에서의 전역 this : global
+// 둘 다 모두 ECMA 스크립트에서 정의한 객체의 구현체 
+console.log(this);
+// 2) 함수내부에서
+// 기본적으로 함수내부에서 this 는 window / global
+var a = {
+    b : function(){
+        function f(){
+            console.log(this)
+        }
+        f();    // 함수 내부의 또 함수이기떄문에 this = 전역객체
+    }
+};  
+a.b();
+
+// 3) Method 호출 시 this
+// 메소드를 호출한 대상이 this
+ var c = {
+     d : function(){
+         console.log(this)
+     }
+ }
+ c.d(); // method는 .앞에까지 오는 부분이 this가 된다. 
+
+var c2 = {
+d2: {
+        e:function(){
+            console.log(this)
+        },
+        f: 2
+    }
+}
+c2.d2.e();  // 이경우 this는 c2.d2임 
+
+
+// ** 내부함수에서의 우회법
+var a = 10;
+var obj ={
+    a:20,
+    b:function(){
+        console.log(this.a);    // 20 : 메소드 스코프에서의 this이므로 10
+        function c(){
+            console.log(this.a)
+        }
+        c();    // 10 : 전역스코프에서의 a
+    }
+}
+obj.b();
+// 위의 결과에서 c() 함수의 this.a를 20으로 나오도록 유도하기 위해서는 내부함수에서 우회법을 사용하면 됨
+var a = 10;
+var obj = {
+    a: 20,
+    b: function () {
+        var self = this.a;      // 이런식으로 변수에 this 값을 담으면
+        console.log(self);    // 20 : 메소드 스코프에서의 this이므로 10
+        function c() {
+            console.log(self);      
+            // 함수내부의 self 객체가 없기 때문에 다음의 외부 스코프에서 self를 찾게되고 
+            // b()의 변수 중 self가 있기 떄문에 20 출력
+        }
+        c();    // 20 : 전역스코프에서의 a
+    }
+}
+obj.b();
+
+// callback 에서의 this
+// 1. 기본적으로 함수내부에서의 this 와 동일하게 window와 global 이나, 상황에 따라 많이 다름
+// 아래는 call(), apply(), bind() 메소드 
+
+var a = function(x, y, z){
+    console.log(this, x, y, z)
+}
+var b = {
+    c:'eee'
+}
+
+// 세가지 경우 모두 {c:'eee'}, 1, 2, 3이 출력됨 
+
+// call : 즉시호출
+a.call(b, 1, 2, 3)
+// apply : 즉시호출, 인자를 모두 나열하지 않고 배열로 하나로 묶어서 넣음 
+a.apply(b, [1,2,3])
+// bind : 새로운 함수 생성해서 콜백  
+var c = a.bind(b)
+c(1,2,3)    
+// or
+var d = a.bind(b, 1, 2)
+d(3);
+
+// 2. callback 에서의 this
+var callback = function(){
+    console.dir(this)
+}
+var obj = {
+    a : 1,
+    b: function(cb){
+        cb();   
+    },
+    c: function(cb){
+        cb.call(this);
+    }
+}
+obj.b(callback);    // 함수 인자를 받아서 실행, 전역 스코프이기 때문에 this = window
+obj.c(callback);    // this는 obj임 
+
+
+// 3. setTimeout에서 this를 조작하기 위한 방법
+var callback = function(){
+    console.dir(this)   // = window
+}
+var obj = {
+    bind :1,
+}
+setTimeout(callback.bind(obj), 100)    
+// 개발자가 this를 이미 바인딩함
+// 이런식으로 bind 메소드를 통해 this 의 범위를 바꾸어 조작할 수 있음
+// 
+
+
+// *** Callback 함수의 this 정리 
+
+// 기본적으로 함수의 this와 같다  (window / global)
+// 제어권을 가진 함수가 callback의 this를 명시한 경우 그에 따른다 (예제 2)
+// 개발자가 this를 바인딩한 채로 callback을 넘기면 그에 따른다. (예제 3)
+
+
+
+// 생성자 함수에서의 this : 인스턴스 
+function Person (name, age ){
+    this.name = name;
+    this.age = age;
+}
+var person = new Person('sunju', 28);
+console.log(person)
+
+</script>
+    
+</body>
+</html>
