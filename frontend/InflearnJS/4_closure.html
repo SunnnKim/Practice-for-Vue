@@ -6,6 +6,128 @@
     <title>Document</title>
 </head>
 <body>
+<script>
+    // Closure 란?
+    // MDN : A Closure is the combination of a function and the lexical environment within
+    //      which that function was declared.
+    // 즉, 선언 당시의 환경에 대한 정보를 담는 객체
+    // 함수와 함수가 선언될 당시의 환경정보 사이의 조합 
+    // scope 와 유사한 점을 가지고 있는데, 
+    // scope는 함수와 변수의 유효범위이고 closure는 스코프를 담고 있음
+    // 
+    // closure란, 함수 내부에서 생성한 데이터와 그 유효범위로 인해 발생하는 특수한 현상, 상태 
+    // closure는 함수가 최초로 선언될 시의 정보를 유지함
+
+    // closure의 특징
+    // 1. 접근권한 제어
+    // 2. 지역변수 보호
+    // 3. 데이터 보존 및 활용
+    function a() {
+        var x = 1;
+        function b(){
+            console.log(x);     // result : 1
+        };
+        b();
+    }
+    a();    
+    // console.log(x); // error
+    // 위의 예제에서 x의 값은 a()나 b()안에서는 접근이 가능하지만,
+    // a()외부에서는 접근이 안된다. (지역변수보호)
+    // x의 값을 외부에서 출력하려면 다음과 같이 return을 사용하면 된다.
+    function aa() {
+            var x = 1;
+            return function b() {
+                console.log(x);     // result : 1
+            };
+    }
+    var d = aa();    
+    d();    // x의 값을 출력할 수 있음.
+
+    // 그러나 위의 방법으로는 x의 값을 수정할 수는 없다.
+    // x의 값을 바꾸고 싶으면 getter와 setter를 담은 객체를 return 해주면 된다.
+    function aaa() {
+        var _x = 10;
+        return {
+            get x(){return _x;},
+            set x(v){ _x = v;}
+        };
+    }
+    var c = aaa();
+    console.log(c.x)    // 10
+    c.x = 20;
+    console.log(c.x)    // 20
+
+// ******
+// Scope는 정의될 때 결정된다.
+
+// 예제 1 : setName
+function setName(name) {
+    return function(){
+        return name;
+    }
+}
+var setname = setName('원빈');
+setname();
+
+// 위 코드의 실행 순서를 알아보자
+// 우선 전역범위에서의 hoisting이 일어난다
+/*
+    1. 우선 함수 선언식은 선언과 정의가 동시에 일어난다. 
+        function setName(name) {
+        return function(){};
+        }
+    2. 변수 setname이 선언된다. 그리고 더이상 호이스팅 할 부분이 없으므로 바로 다음 줄에 setname이 정의된다.
+        var setname;
+        setname = setName('원빈')
+    
+    3. setName()의 실행컨텍스트가 수행된다. 호이스팅을 실행하는데 인자로 들어온 name이 선언되고 정의된다.
+    function setName(name){
+        var name;
+        this.name = name;
+        return function(){}
+    }
+    
+    4. 그 후에는 return값이 반환되는데 여기서는 함수이기 때문에 다시 실행 컨텍스트가 실행된다.
+        ...
+        return function(){
+            return name;
+        }
+        name이 우선 익명함수 내부에 없기 때문에 setName에서 변수의 존재여부를 찾고 name을 리턴한다.
+
+*/
+
+// 예제 2
+function setCounter(){
+    var count = 0;
+    return function(){
+        return ++count;
+    }
+}
+var count = setCounter();
+count();    // 실행하는대로 계속 카운트가 증가한다.
+
+/*
+    ** 순서
+    1. setCounter 정의 (GLOBAL > setCounter)
+        function setCounter(){ }
+    2. count 변수 호이스팅 후 setCount 실행 및 실행컨텍스트 
+        var count;
+        count = setCounter();
+    3. setCounter 실행컨텍스트 및 변수 정의와 할당
+        var count;
+        count = 0;
+        return function(){}
+    4. 익명함수 정의 및 할당 
+        return function(){
+            return ++count;
+        }
+    5. count 를 찾고 1만큼 증가시킨 후에 반환
+    
+
+*/
+
+
+</script>
     
 </body>
 </html>
