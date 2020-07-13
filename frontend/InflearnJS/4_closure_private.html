@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<script>
+    
+    
+    //closure 사용하여 private 함수 만들기
+ 
+    // 예시
+    var createCar = function(f, p){
+        var fuel = f;
+        var power = p;
+        var total = 0;
+        return {
+            run : function(km){
+                var wasteFuel = km / power;
+                if(fuel < wasteFuel){
+                    console.log('이동불가:' + km);
+                    return;
+                }
+                fuel -= wasteFuel;
+                total += km;
+            }
+        }
+    }
+    var car = createCar(10, 2);
+    car.run(20);
+
+
+    // 1. 함수에서 지역변수 및 내부함수 등을 생성한다 
+    // 2. 외부에 노출시키고자하는 멤버들로 구성된 객체를 return한다.
+    // ===>  return 한 객체에 포함된 객체는 public하다
+    // ===>  return 한 객체에 포함되지 않은 객체는 private하다. (외부에서 접근 및 수정이 불가능하다)
+
+
+    // 함수에서 함수를 return하면 최초 선언시의 정보를 유지한다. 
+    // 그렇기 때문에 외부에 노출하고자 하는 정보들만 모아 객체로 반환한다.
+    // return 하지 않은 정보들은 다음이 가능하다 
+    // 1. 접근 권한 제아
+    // 2. 지역변수 보호
+    // 3. 데이터 보존 및 활용 가능
+
+    // closure는 함수형 프로그래밍에서 currying(커링) 패턴을 이해하는데 아주 중요한 개념이다.
+    /*
+        currying이란?
+         Currying은 여러 개의 인자를 가진 함수를 호출 할 경우, 
+         파라미터의 수보다 적은 수의 파라미터를 인자로 받으면 누락된 파라미터를 인자로 받는 기법을 말한다. 
+         즉, 커링은 함수 하나가 n개의 인자를 받는 과정을 n개의 함수로 각각의 인자를 받도록 하는 것이다. 
+         부분적으로 적용된 함수를 체인으로 계속 생성해 결과적으로 값을 처리하도록 하는 것이 그 본질이다.
+    */
+   var greet = function (greeting, name) {
+        console.log(greeting + ", " + name);
+    };
+    greet("Hello", "Heidi"); //"Hello, Heidi"
+
+    var greetCurried = function (greeting) {
+        return function (name) {
+            console.log(greeting + ", " + name);
+        };
+    };
+    var greetHello = greetCurried("Hello");
+        greetHello("Heidi"); //"Hello, Heidi"
+        greetHello("Eddie"); //"Hello, Eddie"
+</script>
+    
+</body>
+</html>
