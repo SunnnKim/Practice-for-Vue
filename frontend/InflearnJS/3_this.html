@@ -51,7 +51,7 @@ c2.d2.e();  // 이경우 this는 c2.d2임
 
 // ** 내부함수에서의 우회법
 var a = 10;
-var obj ={
+var obj = {
     a:20,
     b:function(){
         console.log(this.a);    // 20 : 메소드 스코프에서의 this이므로 10

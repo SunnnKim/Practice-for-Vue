@@ -6,7 +6,7 @@ var app = http.createServer(function (request, response) {
     var _url = request.url;
 
     var queryData  = url.parse( _url, true).query;
-    console.log(queryData)
+    console.log(queryData.id)
 
 
     if (_url == '/') {

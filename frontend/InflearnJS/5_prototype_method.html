@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<script>
+    // Prototype 메소드 상속 및 동작 원리
+    function Person( n, a){
+        this.name = n;
+        this.age = a;
+    }
+
+    // 다음 함수의 getter/setter를 반복없이 사용하고 싶음
+    // ---> prototype에 메소드를 이동시킴
+    
+    // 예제 1
+    Person.prototype.setOlder = function(){
+        this.age += 1; 
+        console.log(this.age)
+    }
+    Person.prototype.getAge = function(){
+        return this.age;
+    }
+
+    var gomu = new Person('gomu', 30);
+    var iu = new Person('iu', 28);
+
+    gomu.__proto__.setOlder();  // NaN 이 출력 ---> this가 __proto__로 바인딩 되기 때문
+    gomu.__proto__.getAge();    //NaN
+
+    gomu.setOlder();  // this가 gomu로 바인딩  = 31
+    gomu.getAge();    // 31
+
+    // prototype에 age 프로퍼티가 존재한다면?
+    Person.prototype.age = 100;
+    iu.__proto__.setOlder();
+    iu.__proto__.getAge();  // 101 : this = prototype
+
+    iu.setOlder();
+    iu.getAge();    // 31 : this = person
+
+    // 메소드 내부에서 this를 바인딩할 경우 반드시 바인딩의 범위를 잘 알아보고 사용할 것
+
+     
+</script>
+    
+</body>
+</html>
