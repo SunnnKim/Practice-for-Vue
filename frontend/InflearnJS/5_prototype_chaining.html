@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+<script>
+    // Prototype Chaining
+    // prototype으로 연결된 체인은 부모 - 자식 관계이다.
+    // Array, Number, Boolean 등 자바스크립트의 기본 객체들은 모두 Object의 prototype을 상속받고 있다.
+    // Object는 prototype에 함수를 만들면 아래 자식들에게 모두 상속되기 떄문에
+    // Object만 사용할 수 있는 함수들은 모두 Object.를 통해 직접 접근해서 사용할 수 있다.
+
+    // ex 1
+    var arr = [ 1,2,3 ];
+
+    console.log(arr.toString());    // 1,2,3
+    // Array에 toString() 메소드가 없음에도 실행가능함
+    // Object의 toString을 상속했기 때문에
+
+    // ex 2
+    var arr = [1, 2, 3];
+    arr.toString = function(){
+        return this.join('_')
+    };
+
+    console.log(arr.toString());    //1_2_3
+    // array의 toString 을 넣어줬기 때문
+
+    console.log(arr.__proto__.toString.call(arr));  //1,2,3 
+    console.log(arr.__proto__.__proto__.toString.call(arr));;   // Object Array   
+    // Object 내부의 toString() 메소드 내용 (object 타입)
+
+    // ex 3
+    var obj = {
+        a : 10,
+        b: {
+            c : 'c'
+        },
+        d: [1,2,3]
+    };  
+    // 다음을 출력하는 Object의 prototype method 만들기(toString)
+    Object.prototype.toString = function () {
+        var res = [];
+        for( var key in this ){
+            res.push(key + ': ' + this[key].toString());
+        }
+        return '{' + res.join(',') + '}'; 
+    }
+    Array.prototype.toString = function(){  // [1,2,3]
+        return '[' + this.join(', ') + ']';
+    }
+
+    console.log(obj.toString());
+    // {a: 10, b:{c:'c'}, d:[1, 2, 3]}
+
+    
+
+
+</script>
+
+</body>
+</html>
