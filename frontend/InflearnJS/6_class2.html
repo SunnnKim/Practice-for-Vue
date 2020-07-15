@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    // Class의 상속
+function Person(name, age){
+    this.name = name || '이름없음'
+    this.age = age ||   '나이없음'
+}
+
+// prototype method
+Person.prototype.getName = function(){
+    return this.name;
+}
+Person.prototype.getAge = function () {
+    return this.age;
+}
+
+
+function Employee(name, age, position){
+    this.name = name || '이름없음'
+    this.age = age ||   '나이모름'
+    this.position = position ||'직책모름'
+}
+Employee.prototype.getName = function () {
+    return this.name;
+}
+Employee.prototype.getAge = function () {
+        return this.age;
+    }
+Employee.prototype.getPosition = function () {
+    return this.position;
+}
+
+// 위 두 클래스는 getName, getAge메소드가 겹치므로 상위 클래스에 이 두 메소드를 정의한 후
+// 하위 Employee 클래스가 이를 상속받은 후 getPosition() 메소드만 추가한다.
+
+// 수정
+
+function Employee(name, age, position){
+    this.name = name || '이름없음'  
+    this.age = age || '나이모름'
+    this.position = position;
+}
+
+// 상속받기 : 하위 클래스의 prototype에 상위 클래스를 생성하도록 한다. 
+Employee.prototype = new Person(); 
+// 이렇게 상속을 받으면 하위 객체가 생성될 때 상위 클래스의 프로토타입을 가지게 되므로 
+// 생성자를 하위 클래스로 다시 바꿔주어 본래의 프로토타입 기능도 구현할 수 있도록 한다. 
+Employee.constructor = Employee;
+// 이렇게 하면 두개의 클래스가 super-sub 클래스의 관계를 가지게 된다.
+
+// Employee 고유의 프로토타입 메소드를 정의한다. 
+Employee.prototype.getPosition = function () {
+    return this.position;
+}
+
+var em = new Employee('kim', 22, 'manager');
+console.log(em.getName())
+console.log(em.getAge())
+console.log(em.getPosition());
+console.dir(em);
+
+
+// 위의 경우에서 만약 name 이나 age와 같은 프로퍼티가 비어있으면
+// undefined가 아닌 '이름없음' 또는 '나이모름' 등의 엉뚱한 결과가 나올 수 있다.
+
+console.log(new Employee()); // 이름없음, 나이모름, undefined
+
+// prototype의 다른 프로퍼티는 제외하고 prototype만 가져오려면 
+// 다리가 되어주는 빈 객체를 만들어 상속하려는 프로토타입만을 가져온 후 
+// 하위 클래스에 다리 객체를 생성해주면 된다.
+
+// 예제
+function Employee2(name, age, position) {
+    this.name = name;
+    this.age = age;
+    this.position = position;
+}
+
+function Bridge(){ } // 프로퍼티가 비어있는 객체
+Bridge.prototype = Person.prototype;    // 상위 객체의 프로토타입만을 가져온다
+
+// 하위 객체의 프로토타입에 다리객체를 생성한다
+Employee2.prototype = new Bridge();
+// Employee의 prototype 생성자는 Employee로 설정한다
+Employee2.prototype.constructor = Employee2; 
+// 추가하려는 프로토타입을 추가한다
+Employee2.prototype.getPosition = function () {
+    return this.position;
+}
+
+var em2 = new Employee2();
+console.dir(em2);   // 결과 확인하기
+
+// prototype chain 에서 Bridge 클래스를 이용해서 
+// 불필요한 프로퍼티의 값을 끊고 원하는 prototype method만 상속하여 사용할 수 있음
+
+// 그러나 Brigde 클래스는 함수의 내용상의 구현이 없고 단순히 연결하는 클래스이기 때문에
+// 함수화하여 사용하는 것을 권장함
+// 브릿지 함수는 단 한번만 생성해서 사용하도록 함.
+
+var extendClass = (function(){  
+    function Bridge(){}
+    return function(Parent, Child){
+        Bridge.prototype = Parent.prototype;
+        Child.prototype = new Bridge();
+        Child.prototype.constructor = Child;
+        // Super와 Sub에서 모두 사용하는 변수들도 불러오고 싶을 때 
+        Child.prototype.SuperClass = Parent;    // Parent생성자함수와 연결됨
+
+    }
+ })();
+
+ // 사용법 extendClass(Parent, Child)
+ function Super(){
+    this.a = '1';
+    this.b = '2'
+ }
+ Super.prototype.printSuper = ()=>console.log('Print this from Super Class');
+
+ function Sub(){
+    this.a = 'a'
+    this.b = 'b'
+ }
+extendClass(Super, Sub);
+Sub.prototype.printSub = () => console.log('Print this from Sub Class')
+
+ var sub = new Sub();
+
+ console.dir(sub)
+
+sub.printSuper();
+sub.printSub();
+
+// ES6 문법에서는 클래스와 클래스 상속문법을 제공하고 있음
+
+class PersonES6 {
+    
+    constructor (name, age) {
+        this.name = name || 'no name';
+        this.age = age || 'no age';
+    }
+    getName(){ return this.name; }
+
+    getAge(){ return this.age; }
+}
+class Man extends Person {
+    constructor(name, age, position){
+        super(name, age)
+        this.position = position;
+    }
+    getPosition(){
+        return this.position;
+    }
+}
+
+var person = new Man('name', 30, 'CEO');
+console.log(person);
+
+
+
+</script>
+</body>
+</html>
